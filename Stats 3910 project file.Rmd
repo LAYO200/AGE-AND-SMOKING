@@ -1,14 +1,45 @@
 ---
+<<<<<<< HEAD
 title: "AGE AND SMOKING: A COMPREHENSIVE ANALYSIS USING THE FREQUENTIST AND BAYESIAN METHOD "
 output: html_document
 date: "2024-10-5"
 AUTHORS: Kiana Philpott, Chizurum Ewelike, LAYO Faloseyi
+=======
+title: "STATISTICS 3910 Project"
+author: "Kiana, Chizurum, Layo"
+date: "Last updated on `r Sys.Date()`"
+output:
+html_document:
+fig_caption: yes
+theme: lumen
+toc: yes
+toc_depth: 2
+df_print: kable
+toc_float:
+collapsed: no
+>>>>>>> ba637b0 (we did the Bayesian and Frequentist analysis)
 ---
 
-```{r setup, include=FALSE}
+```{r, message=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+# potential packages of interest
+packages = c("ALSM", "mosaic", "car", "leaps", "tidyverse", "here",
+"BayesFactor")
+
+
+# load all packages here:
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(janitor)
+library(BayesFactor)
+
+# set seed value of random number generator to get "replicable" random numbers (in case?).
+set.seed(100)
 ```
 
+<<<<<<< HEAD
 ## R Markdown
 **Research Hypothesis**:
  <br> 
@@ -86,3 +117,165 @@ Size: second trial
       
       
 
+=======
+# Big-picture
+
+## Research question
+
+This study aims to analyze the age demographics of those who smoke. The null hypothesis, H0, assumes that the average age of smokers is 60 years or younger, while the alternative hypothesis, H1, assumes that the average age of individuals who smoke is greater than 60 years.
+
+## Description of data
+The original source: https://www.kaggle.com/datasets/utkarshx27/smoking-dataset-from-uk?resource=download
+The data set includes survey data on smoking habits from the United Kingdom. The data set can be used for analyzing demographic characteristics of smokers.
+
+```{r, message=FALSE}
+# read in the csv file
+smoking <- read.csv("https://drive.google.com/uc?export=download&id=1_w27s7YcT4cT6PcSTe9UA4Ul5ZASH-tt")
+```
+
+
+
+```{r}
+# remove unneccesary columns from dataset
+newdataset <- smoking %>% select(-amt_weekdays, -amt_weekends, -marital_status,-highest_qualification, -nationality, -gross_income, -region, -ethnicity) 
+
+# view updated dataset
+glimpse(newdataset) 
+```
+
+```{r}
+# Frequentist Analysis
+
+# check if age approximately follows a normal distribution by creating a histogram
+
+# load necessary library
+library(ggplot2)
+
+# create a histogram of the age variable
+ggplot(newdataset, aes(x = age)) +
+geom_histogram(bins = 30, fill = "blue", color = "black", alpha = 0.7) +
+theme_minimal() +
+labs(
+title = "Histogram of Smokers' Ages",
+x = "Age",
+y = "Frequency"
+) +
+geom_density(aes(y = ..density..), color = "red", linewidth = 1.2) # adds a density curve
+
+```
+
+
+```{r}
+# check for outliers
+
+
+# create a boxplot for the 'age' variable
+boxplot(newdataset$age, 
+main = "Boxplot for Age", 
+outpch = 19,# change the point character for outliers
+outcol = "red",# make the outliers red
+outcex = 1.5,# make the outlier points larger
+ylab = "Age", 
+col = "lightblue", 
+border = "darkblue")
+
+# Based on our boxplot the median age appears to be between 40 and 45. the spread of the box indicates that most data is between 30 and 60 years of age.
+
+```
+
+
+
+
+
+```{r}
+qqnorm(newdataset$age, main = "QQ-Plot of Age")
+qqline(newdataset$age, col = "red", lwd = 2)
+
+# The red line represents the expected pattern if our data was normally distributed. Our points deviate from the red line at both tail ends, indicating non-normality. The left tail shows points above the line, which suggests less extreme lower values and the right tail shows points below the line which suggests less extreme higher values. So we need to keep in mind there is a bit of deviation from normaility in our analysis. 
+```
+
+
+
+
+
+```{r}
+
+# perform a one-sample t-test to check if the average age of smokers is 60
+smokers_data <- newdataset[newdataset$smoke == "Yes", ]
+
+# run the t-test
+t_test_result <- t.test(smoking$age, mu = 60)
+
+# extract the t-statistic and p-value
+t_stat <- t_test_result$statistic
+p_value <- t_test_result$p.value
+
+# print the results
+cat("t-statistic:", t_stat, "\n")
+cat("p-value:", p_value, "\n")
+
+
+# we get a T-Statistic of -22.30651 which suggests strong evidence against the null hypothesis
+# our P-Value of nearly 0 indicates strong evidence against the null hypothesis
+# we can reject the null hypothesis and conclude that the average age of smokers is significantly different from 60 (lower than 60).
+```
+
+
+```{r}
+# Bayesian Analysis
+
+
+## Load the BayesFactor package
+library(BayesFactor)
+
+# Perform the Bayesian t-test
+bayesian_t_test <- ttestBF(
+x = smokers_data$age,# data for smokers
+mu = 60# mean under null hypothesis
+)
+
+# Extract the Bayes Factor
+bf_value <- exp(bayesian_t_test@bayesFactor$bf)# Extract and exponentiate the log Bayes Factor
+
+# Display the Bayes Factor
+cat("Bayes Factor (BF10):", bf_value, "\n")
+
+# Our Bayes Factor value of 8.901085e+67 shows evidence in favor of our alternative hypothesis. The data is extremely unlikely under our null hypothesis. Therefore, we see that the average age of smokers is not 60 or younger which strongly supports the alternative hypothesis.
+```
+
+# Analysis and Results
+
+
+```{r}
+# Both the Frequentest analysis and the Bayesian analysis
+
+# Load library
+library(BayesFactor)
+
+# Ensure 'smoke' is a factor with exactly two levels ("Yes" and "No")
+newdataset$smoke <- droplevels(as.factor(newdataset$smoke))
+
+# Verify that 'smoke' has only two levels
+levels(newdataset$smoke)
+
+# Perform the Bayesian t-test comparing age between smokers and non-smokers
+bayestesting <- ttestBF(
+# Formula specifying age by smoke status
+formula = age ~ smoke,
+# Data set to analyze
+data = newdataset, 
+# Test for the full range, not directional
+nullInterval = NULL
+)
+
+# Display the Bayes Factor result
+print(bayestesting)
+
+
+```
+
+
+# Conclusion
+
+# Discussion and Biases
+>>>>>>> ba637b0 (we did the Bayesian and Frequentist analysis)
