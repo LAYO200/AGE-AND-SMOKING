@@ -1,281 +1,315 @@
+
 ---
-<<<<<<< HEAD
-title: "AGE AND SMOKING: A COMPREHENSIVE ANALYSIS USING THE FREQUENTIST AND BAYESIAN METHOD "
-output: html_document
-date: "2024-10-5"
-AUTHORS: Kiana Philpott, Chizurum Ewelike, LAYO Faloseyi
-=======
-title: "STATISTICS 3910 Project"
-author: "Kiana, Chizurum, Layo"
+title: "Analyzing Age Demographics of Smokers"
+author: 'Group Members: Kiana, Chizurum, Layo'
 date: "Last updated on `r Sys.Date()`"
 output:
-html_document:
-fig_caption: yes
-theme: lumen
-toc: yes
-toc_depth: 2
-df_print: kable
-toc_float:
-collapsed: no
->>>>>>> ba637b0 (we did the Bayesian and Frequentist analysis)
+  html_document:
+    fig_caption: true
+    theme: lumen
+    toc: true
+    toc_depth: 2
+    df_print: kable
+    toc_float:
+      collapsed: false
+  pdf_document:
+    toc: true
+    toc_depth: '2'
 ---
 
-```{r, message=FALSE}
+```{r, message=FALSE, warning=FALSE, echo=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
-# potential packages of interest
+# Potential packages of interest
 packages = c("ALSM", "mosaic", "car", "leaps", "tidyverse", "here",
 "BayesFactor")
 
 
-# load all packages here:
+# Load all packages here:
 library(readr)
 library(dplyr)
 library(ggplot2)
 library(janitor)
 library(BayesFactor)
+library(Bolstad)
 
-# set seed value of random number generator to get "replicable" random numbers (in case?).
+# Set seed value of random number generator to get "replicable" random numbers (in case?).
 set.seed(100)
 ```
 
-<<<<<<< HEAD
-## R Markdown
-**Research Hypothesis**:
- <br> 
-  This study aims to analyze the age demographics of those who smoke. The null hypothesis, H0, assumes that the average age of smokers is 60 years or younger, while the alternative hypothesis, H1, assumes that the average age of individuals who smoke is greater than 60 years.
+# Introduction: Research Question & Background
 
-**Background**:
- <br> 
-  The nature of smoking remains a public health issue, and seems to affect people across varying age groups. This research aims to determine whether older adults are the most likely to smoke. In doing so, we might be able to recorgnize patterns that could inform the public health sector and contribute to reduced smoking rates. This study is particularly interesting as it highlights how societal attitudes towards smoking could evolve over time 
+## Research Question
 
-<<<<<<< HEAD
-**Data Sketch**:
- <br> 
-  The data set includes survey data on smoking habits from the United Kingdom. The data set can be used for analyzing demographic characteristics of smokers. 
+Is the average age of smokers 60 years old?
 
-**Size**: 
- <br> 
-There are 12 variables and there are 1691 observations
-=======
-Data Sketch:
-## kiana trial
+The primary goal of this study is to determine whether the average age of smokers is 60 years old through analyzing the age demographics of those who smoke. In addition to determining if the average age is 60, the research question also aims to check how much lower the average age could be if it deviates from this threshold.
 
-Size: second trial
->>>>>>> 92d6b980451b413a13d97482f11a7f3450c02a64
+The null hypothesis (H0) uses statistical techniques to infer that the average age is precisely 60, while the alternative hypothesis (H1) claims that the average age of smokers is less than 60. 
 
-**Source**: https://www.kaggle.com/datasets/utkarshx27/smoking-dataset-from-uk?resource=download
+This study intends to measure the degree of deviation from the null hypothesis and offer insights into the age distribution of smokers through applying both Frequentist and Bayesian approaches. 
 
-**Analysis**: 
- <br> 
-  The tentative analysis plan is as follows:
-  <br> 
-  <br> 
-     | **1**. Check for the need of data cleaning. 
-      <br> 
-      <br> 
-     | **2**. Get familiar with the data set itself. 
-      <br> 
-      <br> 
-     | **3**. Create visualizations to show the distributions to show the distribution of age and smoking to enhance understanding
-      <br> 
-      <br> 
-     | **4**. Frequentist approach:
-      <br> 
-      <br> 
-          - Conduct a T-Test that compares the mean age of smokers to the age variable 
-           <br> 
-           <br> 
-          - Validate assumptions for the T-Test (normality & homogeneity of variances)
-           <br> 
-           <br> 
-          - Calculate a 95% confidence interval for the mean age of smokers to further assess the accuracy of our estimate
-           <br> 
-           <br> 
-      | **5**. Bayesian approach:
-       <br> 
-       <br> 
-          - Conduct a Bayestian T-Test using prior distribution 
-           <br> 
-           <br> 
-          - Analyze the posterior distribution to estimate the mean age & credible interval to help assess the probability that the               mean age of smokers is greater than 60 years 
-           <br> 
-           <br> 
-          - Conduct a prior sensitivity analysis by testing different priors to understand the impact they have on the results
-           <br> 
-           <br> 
-      | **6**. Compare the results from each approach (includes: interpretations & visualizations)
-       <br> 
-       <br> 
-      | **7**. Document the findings & results
-       <br> 
-      <br> 
-      
-      
-      
-      
-      
-      
+## Description of Data
+The Original Source: https://www.kaggle.com/datasets/utkarshx27/smoking-dataset-from-uk?resource=download
 
-=======
-# Big-picture
+The Google Drive accessible version: https://drive.google.com/file/d/1_w27s7YcT4cT6PcSTe9UA4Ul5ZASH-tt/view
 
-## Research question
+The data set is a CSV file & includes survey data on smoking habits from the United Kingdom. The data set can be used for analyzing demographic characteristics of smokers. There are 1691 observations & 12 variables. 
 
-This study aims to analyze the age demographics of those who smoke. The null hypothesis, H0, assumes that the average age of smokers is 60 years or younger, while the alternative hypothesis, H1, assumes that the average age of individuals who smoke is greater than 60 years.
-
-## Description of data
-The original source: https://www.kaggle.com/datasets/utkarshx27/smoking-dataset-from-uk?resource=download
-The data set includes survey data on smoking habits from the United Kingdom. The data set can be used for analyzing demographic characteristics of smokers.
-
-```{r, message=FALSE}
-# read in the csv file
-smoking <- read.csv("https://drive.google.com/uc?export=download&id=1_w27s7YcT4cT6PcSTe9UA4Ul5ZASH-tt")
+```{r, message=FALSE, echo=FALSE}
+# Read in the csv file
+smoking <- read.csv("https://drive.google.com/uc?export=download&id=1_w27s7YcT4cT6PcSTe9UA4Ul5ZASH-tt") 
 ```
 
+The data-set below shows all the unnecessary columns have been removed. The 'X' column represents each new person. The 'gender' column represents the gender of each person. The 'age' column represents the age of each person. The 'smoke' column represents each persons smoking status with categories 'Yes' and 'No'. Lastly, the 'type' column represents the type of cigarettes smoked with levels including: Packets, Hand-Rolled, Both/Mainly Packets and Both/Mainly Hand-Rolled. This updated data-set will be used for the remainder of the project. 
 
-
-```{r}
-# remove unneccesary columns from dataset
+```{r, echo=FALSE}
+# Remove unnecessary columns from dataset
 newdataset <- smoking %>% select(-amt_weekdays, -amt_weekends, -marital_status,-highest_qualification, -nationality, -gross_income, -region, -ethnicity) 
 
-# view updated dataset
+# View updated data-set
 glimpse(newdataset) 
 ```
+# Analysis
 
-```{r}
+## The Frequentist Analysis: 
+
+To better understand the age distribution of smokers, we will conduct exploratory data analysis (EDA), focusing on identifying trends, patterns, and outliers in the data. A one-sample T-test will be used to assess whether the average age of smokers is significantly less than 60 years old. The null hypothesis (H₀) assumes that the mean age is 60, while the alternative hypothesis (H₁) posits that the mean age is less than 60.
+
+Before proceeding with the T-test, we need to check some key assumptions. To evaluate the assumption of normality, we are using a histogram created with the 'ggplot2' package. The histogram follows a bell-shaped distribution, which suggests that the data is approximately normally distributed. This is important for justifying the use of the T-test, as it assumes normality in the data. Additionally, since our sample size is large, the Central Limit Theorem ensures the T-test will still be valid even if the data slightly deviates from normality.
+
+The histogram reveals the following patterns in the age distribution of smokers:
+
+Younger Adults (25-40 years): There is an increase in smoking prevalence in this age group, suggesting smoking is more common among younger adults and extends into middle age.
+
+Middle-Aged Adults (35-50 years): The distribution peaks in this age range, indicating it has the highest frequency of smokers.
+
+Older Adults (50+ years): After age 50, the frequency of smokers gradually declines.
+
+The bell-shaped nature of the histogram supports the use of the T-test, as it indicates the data is symmetrically distributed around a central value (likely the mean). While the histogram provides a visual indication of where the mean might lie, the T-test will provide the statistical evidence needed to formally determine if the observed mean significantly deviates from the hypothesized value of 60, either confirming or refuting the hypothesis.
+
+
+```{r, echo=FALSE, warning=FALSE}
 # Frequentist Analysis
 
-# check if age approximately follows a normal distribution by creating a histogram
+# Check if age approximately follows a normal distribution by creating a histogram
 
-# load necessary library
-library(ggplot2)
-
-# create a histogram of the age variable
+# Create a histogram of the age variable  
 ggplot(newdataset, aes(x = age)) +
-geom_histogram(bins = 30, fill = "blue", color = "black", alpha = 0.7) +
-theme_minimal() +
-labs(
-title = "Histogram of Smokers' Ages",
-x = "Age",
-y = "Frequency"
-) +
-geom_density(aes(y = ..density..), color = "red", linewidth = 1.2) # adds a density curve
+  geom_histogram(bins = 30, fill = "blue", color = "black", alpha = 0.7) +
+  theme_minimal() +
+  labs(
+    title = "Histogram of Smokers' Ages",
+    x = "Age",
+    y = "Frequency"
+  ) +
+  geom_density(aes(y = ..density..), color = "red", linewidth = 1.2) # Adds a density curve
+
 
 ```
 
+Based on the boxplot, the median age of smokers appears to be between 45 and 50 years. After calculating the exact median (shown below), we find that it is 48 years old. This suggests that the central tendency of the data is well below the hypothesized average of 60 years, providing initial evidence that the mean age may indeed be lower than 60.
 
-```{r}
-# check for outliers
+The spread of the box indicates that most data points fall between 30 and 60 years, suggesting that the majority of smokers are concentrated in this age range. Since the upper whisker extends to just over 60, this suggests that a small proportion of smokers are slightly older, but the bulk of smokers appear to be younger. This pattern further supports the hypothesis that the average age of smokers is likely less than 60.
+
+Additionally, there do not appear to be any outliers in the data, as no points lie outside the upper or lower whiskers, which extend to the maximum and minimum values within 1.5 times the interquartile range (IQR). The absence of outliers further strengthens the reliability of the observed age distribution and suggests that the data is not skewed by extreme values.
+
+In summary, the boxplot provides visual evidence that the median age is considerably lower than 60, which aligns with the alternative hypothesis (H1) that the average age of smokers is less than 60. However, a T-test will provide the statistical evidence necessary to formally test whether the observed mean is significantly lower than 60.
 
 
-# create a boxplot for the 'age' variable
+```{r, echo=FALSE}
+# Check for outliers
+
+# Create a boxplot for the 'age' variable
 boxplot(newdataset$age, 
-main = "Boxplot for Age", 
-outpch = 19,# change the point character for outliers
-outcol = "red",# make the outliers red
-outcex = 1.5,# make the outlier points larger
-ylab = "Age", 
-col = "lightblue", 
-border = "darkblue")
+        main = "Boxplot for Age", 
+        outpch = 19,  # Change the point character for outliers
+        outcol = "red",  # Make the outliers red
+        outcex = 1.5,  # Make the outlier points larger
+        ylab = "Age", 
+        col = "lightblue", 
+        border = "darkblue")
 
-# Based on our boxplot the median age appears to be between 40 and 45. the spread of the box indicates that most data is between 30 and 60 years of age.
 
+median_age <- median(newdataset$age)
+print(median_age)
 ```
 
 
+We can confirm that there are no outliers in the data based on the output from the Interquartile Range (IQR) test. The result of Integer(0) indicates that no data points fall outside the typical range of values (1.5 times the IQR above the third quartile or below the first quartile). This absence of outliers suggests that the data is well-behaved and not skewed by extreme values. Since outliers can distort statistical tests, their absence means that the T-test will provide valid and reliable results, allowing us to accurately assess whether the average age of smokers is significantly less than 60.
 
+```{r, echo=FALSE}
+# Calculate Q1 (25th percentile), Q3 (75th percentile), and IQR
+Q1 <- quantile(newdataset$age, 0.25)
+Q3 <- quantile(newdataset$age, 0.75)
+IQR_value <- IQR(newdataset$age)
 
+# Define the lower and upper bounds for outliers
+lower_bound <- Q1 - 1.5 * IQR_value
+upper_bound <- Q3 + 1.5 * IQR_value
 
-```{r}
+# Identify outliers
+outliers <- newdataset$age[newdataset$age < lower_bound | newdataset$age > upper_bound]
+
+# Print the outliers
+print(outliers)
+
+```
+The red line on the plot represents the expected pattern if our data were perfectly normally distributed. Our data points deviate from this line at both ends, indicating some non-normality. Specifically, the left tail of the distribution shows points above the red line, suggesting fewer extreme lower values, while the right tail shows points below the line, indicating fewer extreme higher values. This pattern of deviation suggests that while the data is not perfectly normal, the deviation is relatively mild.
+
+Despite this slight non-normality, we can still proceed with the T-test for the frequentist analysis. According to the Central Limit Theorem (CLT), the large sample size ensures that the sampling distribution of the mean will approximate normality, making the T-test valid even with minor deviations from normality. Additionally, since there are no outliers in the data, the assumptions for conducting the T-test are largely satisfied. 
+
+```{r, echo=FALSE}
 qqnorm(newdataset$age, main = "QQ-Plot of Age")
 qqline(newdataset$age, col = "red", lwd = 2)
 
-# The red line represents the expected pattern if our data was normally distributed. Our points deviate from the red line at both tail ends, indicating non-normality. The left tail shows points above the line, which suggests less extreme lower values and the right tail shows points below the line which suggests less extreme higher values. So we need to keep in mind there is a bit of deviation from normaility in our analysis. 
 ```
 
+We can also assess the effect size using Cohen's d to quantify the magnitude of the difference between our observed sample mean and the hypothesized mean of 60 years.
 
+The Cohen's d value we calculate is -0.5424502 . This suggests a moderate effect size, indicating that the observed mean age of smokers is moderately different from the hypothesized mean of 60 years. The negative sign indicates that the observed mean is lower than the hypothesized value of 60 years.
 
+Overall, a Cohen's d value of -0.5424502  represents a moderate deviation from the hypothesized mean age, suggesting that smokers, on average, are younger than 60 years old. This moderate effect size supports the hypothesis that the mean age of smokers is significantly lower than 60. 
 
+```{r, echo=FALSE}
+# Calculate Cohen's d for effect size
+mean_ages <- mean(newdataset$age)
+sd_ages <- sd(newdataset$age)
+cohen_d <- (mean_ages - 60) / sd_ages
+cat("Cohen's d:", cohen_d, "\n")
 
-```{r}
+```
 
-# perform a one-sample t-test to check if the average age of smokers is 60
+## Conducting the Frequentist Analysis
+
+Since we are comparing the sample mean to a fixed value of 60 years, and our data is approximately normal with a large sample size, we proceed with a T-test for the frequentist analysis approach.
+
+After performing the T-test, we obtain a T-statistic of "-22.30651", which indicates that the mean age of smokers is significantly lower than 60 years. The corresponding p-value is very close to 0, providing strong evidence against the null hypothesis.
+
+As a result, we reject the null hypothesis and conclude that the average age of smokers is significantly less than 60 years.
+```{r, echo=FALSE}
+
+#Perform a one-sample t-test to check if the average age of smokers is 60
 smokers_data <- newdataset[newdataset$smoke == "Yes", ]
 
-# run the t-test
-t_test_result <- t.test(smoking$age, mu = 60)
+#Run the t-test
+t_test_result <- t.test(smoking$age, mu = 60, alternative = "less")
 
-# extract the t-statistic and p-value
+#Extract the t-statistic and p-value
 t_stat <- t_test_result$statistic
 p_value <- t_test_result$p.value
 
-# print the results
+#Print the results
 cat("t-statistic:", t_stat, "\n")
 cat("p-value:", p_value, "\n")
 
-
-# we get a T-Statistic of -22.30651 which suggests strong evidence against the null hypothesis
-# our P-Value of nearly 0 indicates strong evidence against the null hypothesis
-# we can reject the null hypothesis and conclude that the average age of smokers is significantly different from 60 (lower than 60).
 ```
 
+## The Bayesian Analysis:
 
-```{r}
+Before conducting the Bayesian T-test, we first need to assess whether the data follows a normal distribution. To do this, we use the Shapiro-Wilk test on our dataset.
+
+The result of the Shapiro-Wilk test shows a W statistic of 0.97041, indicating some deviation from normality. Additionally, the p-value of 2.2e-16 is extremely small, leading us to reject the null hypothesis (H₀: the data is normally distributed). This suggests that the data is not perfectly normally distributed.
+
+However, despite this deviation from normality, we can proceed with the Bayesian one-sample T-test because our sample size is large. According to the Central Limit Theorem (CLT), with a large sample size, the sampling distribution of the sample mean tends to approximate normality, even if the original data is not perfectly normal.
+
+```{r,echo=FALSE}
+shapiro_test <- shapiro.test(newdataset$age)
+print(shapiro_test)
+```
+
+## Conducting the Bayesian Analysis
+
+For the Bayesian Analysis we will use a One Sample T-Test for reasons similar to the Frequentist Analysis T-Test. We are testing whether the mean age of smokers in our sample is significantly less than 60 years old and a One Sample T-Test is a suitable method for this.  
+
+In our test, we use a "Jefferys" prior. This is a non-informative prior which does not incorporate any strong prior beliefs about our data, and allows the data itself to represent the posterior distribution. Jefferys prior does not bias the results based on the paramter being estimated. Therefore, our Bayesian analysis will rely mainly on the data itself and will have minimal influence from previous assumptions. 
+
+After performing the Bayesian One Sample T-test, we get a t-value of "-21.92" which means, like the Frequentist Analysis, we can reject the null hypothesis since our age of smokers appears to be less than 60 years old. 
+The p-value of nearly 0 supports this decision as it tells us that seeing a smoker of age 60 is very unlikely. 
+
+Additionally, we can see that the sample mean is an estimated 42 years old which is less than our null hypothesis of 60 years old and further supports the alternative hypothesis. 
+
+The credible interval of -Inf 44.01488 shows us that the lower bound is negative infinity which means the age could be much lower than the sample mean, and the upper bound it 44.01 which shows us that, with 95% probability, the true mean age is less than 44.01 years of age. 
+```{r, echo=FALSE}
+
 # Bayesian Analysis
 
-
-## Load the BayesFactor package
-library(BayesFactor)
-
-# Perform the Bayesian t-test
-bayesian_t_test <- ttestBF(
-x = smokers_data$age,# data for smokers
-mu = 60# mean under null hypothesis
+bayes.t.test(
+  x = smokers_data$age,
+  alternative = c("less"),
+  mu = 60,
+# Default CI
+  conf.level = 0.95,
+# Using Jefferys prior because it is a non-informative prior that minimizes the influence of prior beliefs. 
+  prior = c("jeffreys")
 )
 
-# Extract the Bayes Factor
-bf_value <- exp(bayesian_t_test@bayesFactor$bf)# Extract and exponentiate the log Bayes Factor
+``` 
+Next, we will calculate the Bayes Factor to compare the null hypothesis (mean age of smokers is 60) with the alternative hypothesis (mean age of smokers is less than 60). 
 
-# Display the Bayes Factor
-cat("Bayes Factor (BF10):", bf_value, "\n")
-
-# Our Bayes Factor value of 8.901085e+67 shows evidence in favor of our alternative hypothesis. The data is extremely unlikely under our null hypothesis. Therefore, we see that the average age of smokers is not 60 or younger which strongly supports the alternative hypothesis.
-```
-
-# Analysis and Results
-
-
-```{r}
-# Both the Frequentest analysis and the Bayesian analysis
-
-# Load library
-library(BayesFactor)
-
-# Ensure 'smoke' is a factor with exactly two levels ("Yes" and "No")
-newdataset$smoke <- droplevels(as.factor(newdataset$smoke))
-
-# Verify that 'smoke' has only two levels
-levels(newdataset$smoke)
-
-# Perform the Bayesian t-test comparing age between smokers and non-smokers
-bayestesting <- ttestBF(
-# Formula specifying age by smoke status
-formula = age ~ smoke,
-# Data set to analyze
-data = newdataset, 
-# Test for the full range, not directional
-nullInterval = NULL
-)
-
-# Display the Bayes Factor result
-print(bayestesting)
-
+We get a Bayes Factor of "9.974907e+92 ± 0%" which is a large number. It represents very strong evidence in favour of the null hypothesis (the mean age of smokers is less than 60 years old). This supports everything we have found so far. 
+```{r,echo=FALSE}
+# Compute Bayes Factor for hypothesis testing
+bf <- ttestBF(x = newdataset$age, mu = 60)
+print(bf)
 
 ```
 
+# Conclusion:
+This study aimed to determine whether the average age of smokers is 60 years old by analyzing the age demographics of smokers using both Frequentist and Bayesian approaches. Through the application of statistical tests, we examined whether the observed mean age deviates from the hypothesized value of 60 years.
+We explored the average age of smokers and whether it deviates from the hypothesized mean of 60 years using both a Frequentist and a Bayesian approach. Both approaches consistently indicated that the average age of smokers is significantly less than 60 years.
 
-# Conclusion
+Frequentist Analysis:
+Before performing the Frequentist analysis, we checked for several key assumptions:
 
-# Discussion and Biases
->>>>>>> ba637b0 (we did the Bayesian and Frequentist analysis)
+Normality: We used a histogram to assess the distribution of the data and found that it follows an approximately bell-shaped distribution.
+
+Outliers: A boxplot and an Interquartile Range (IQR) test confirmed that there are no outliers in the dataset.
+
+Effect Size: Using Cohen's d, we calculated a value of -0.54245, indicating a moderate deviation from the hypothesized mean of 60 years.
+
+We then conducted the T-test for the Frequentist analysis and found a t-statistic of -22.31 and a p-value of 4.00e-97. Given the very small p-value, we rejected the null hypothesis and accepted the alternative hypothesis, concluding that the mean age of smokers is less than 60 years.
+
+Bayesian Analysis:
+Before performing the Bayesian analysis, we checked for normality using the Shapiro-Wilk test. Although the test showed some deviation from perfect normality, the large sample size allows us to proceed with the Bayesian analysis, thanks to the Central Limit Theorem.
+
+We then performed the Bayesian one-sample T-test, which again led us to reject the null hypothesis, concluding that the mean age of smokers is less than 60 years.
+
+In addition, Cohen's d calculated a moderate effect size of -0.542, indicating that the deviation from the hypothesized mean is moderate, further supporting the finding that the average age is lower than 60.
+
+Differences/Similarities Between Approaches:
+
+Frequentist Approach: Focused on the p-value, t-statistic, and effect size (Cohen's d), providing a direct statistical assessment of whether the observed mean was significantly different from 60.
+
+Bayesian Approach: Provided a Bayes Factor and a credible interval, offering a probabilistic view of the data and quantifying the strength of evidence for the hypothesis. The Bayesian analysis did not rely on the same frequentist thresholds (e.g., p-value < 0.05) but instead focused on the probability of the hypothesis given the data.
+
+Despite the differences in methodology, both approaches led to the same conclusion: that the average age of smokers is significantly below 60 years. This robustness across different statistical frameworks strengthens the confidence in the results.
+
+Conclusion:
+
+In conclusion, both Frequentist and Bayesian analyses consistently show that the average age of smokers is significantly less than 60 years, with the exact mean likely falling below this threshold. Therefore, we can confidently reject the hypothesis that the average age of smokers is 60 years old and conclude that smokers are, on average, younger than 60.
+
+Issues Encountered:
+
+Non-Normality in Data: The Shapiro-Wilk test for normality revealed some deviations from a normal distribution in the Bayesian analysis. However, given the large sample size, the Central Limit Theorem allows us to proceed with the analysis despite this non-normality, which did not affect the results.
+
+Prior Selection in Bayesian Approach: The Jeffreys prior used for the Bayesian analysis was non-informative, which is a common choice for this type of test. While this approach did not influence the results significantly, it may be worth exploring other priors for comparison, particularly if there were more prior information available.
+
+What Was Learned:
+
+This analysis provided a deeper understanding of how both Frequentist and Bayesian approaches can be used to test hypotheses, each offering unique insights. The results were remarkably consistent across both methods, which reinforces the conclusion that smokers are, on average, younger than 60 years. The Frequentist approach provided clear evidence via the T-test and Cohen’s d, while the Bayesian approach offered probabilistic insight into the strength of the evidence.
+
+Reflection:
+
+Knowing what we know now, we would still proceed with the analyses as done, given that the sample size is large enough to mitigate concerns around non-normality. The robustness of the conclusions from both Frequentist and Bayesian approaches provides confidence in the results.
+
+
+
+# Author Contributions
+
+1. Kiana: Frequentist analysis, but helped with other areas
+
+2. Chizurum: Bayesian analysis, but helped with other areas
+
+3. Layo: Bayesian analysis, but helped with others
+
