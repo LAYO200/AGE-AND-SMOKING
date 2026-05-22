@@ -1,32 +1,102 @@
-Probability and Math Stats II (STAT-3910) Project
-Topic: Age and Smoking - A Comprehensive Analysis Using Frequentist and Bayesian Methods
+# Age and Smoking — A Frequentist and Bayesian Analysis
 
-Authors: Kiana Philpott, Chizurum Ewelike, Layo Faloseyi
+**Kiana Philpott, Chizurum Ewelike, Oluwatomilayo Faloseyi** · STAT 3910 · University of Prince Edward Island
 
-Research Hypothesis: 
-This study aims to analyze the age demographics of those who smoke. The null hypothesis, H0, assumes that the average age of smokers is 60 years or younger, while the alternative hypothesis, H1, assumes that the average age of individuals who smoke is greater than 60 years.
+🔗 [View the full analysis](https://layo200.github.io/AGE-AND-SMOKING/)
 
-Background:
-The nature of smoking remains a public health issue, and seems to affect people across varying age groups. This research aims to determine whether older adults are the most likely to smoke. In doing so, we might be able to recognize patterns that could inform the public health sector and contribute to reduced smoking rates. This study is particularly interesting as it highlights how societal attitudes towards smoking could evolve over time.
+---
 
-Data Sketch: 
-The dataset includes survey data on smoking habits from the United Kingdom. The dataset can be used for analyzing demographic characteristics of smokers.
+## Overview
 
-Size: There are 12 variables & there are 1691 observations
-Format: CSV
-Source:https://www.kaggle.com/datasets/utkarshx27/smoking-dataset-from-uk?resource=download
-Analysis: The tentative analysis plan is as follows:
-1. Check for the need of data cleaning
-2. Get familiar with the dataset itself
-3. Create visualizations to show the distribution of age and smoking to enhance understanding
-4. Frequentist approach:
-- Conduct a T-Test that compares the mean age of smokers to the age variable
-- Validate assumptions for the T-Test (normality & homogeneity of variances)
-- Calculate a 95% confidence interval for the mean ago of smokers to further asses the accuracy of our estimate 5. Bayesian approach:
-- Conduct a Bayesian T-Test using prior distribution
-- Analyze the posterior distribution to estimate the mean age & credible interval to help assess the probability that the mean age of smokers is greater than 60 years
-- Conduct a prior sensitivity analysis by testing different priors to understand the impact they have on the results
-6. Compare the results from each approach (includes: interpretation & visualizations) 7. Document findings & results
+This project investigates the age demographics of smokers in the United Kingdom using both Frequentist and Bayesian statistical methods. The central question is whether the average age of smokers is 60 years old — and if not, how far below that threshold the true mean falls.
 
-https://layo200.github.io/AGE-AND-SMOKING/
-                                              
+Both approaches were applied independently and compared, demonstrating how different statistical frameworks can be used to test the same hypothesis and arrive at consistent conclusions.
+
+---
+
+## Research Question
+
+**Is the average age of smokers 60 years old?**
+
+| Hypothesis | Statement |
+|---|---|
+| H₀ (Null) | The mean age of smokers is 60 years |
+| H₁ (Alternative) | The mean age of smokers is less than 60 years |
+
+---
+
+## Dataset
+
+- **Source**: [Smoking Dataset from UK — Kaggle](https://www.kaggle.com/datasets/utkarshx27/smoking-dataset-from-uk?resource=download)
+- **Size**: 1,691 observations · 12 variables
+- **Format**: CSV
+
+Variables retained for analysis: age, gender, smoking status (`smoke`), and cigarette type (`type`). Demographic variables (marital status, income, region, etc.) were removed as they were not relevant to the research question.
+
+---
+
+## Methods
+
+### Frequentist Analysis
+
+A one-sample t-test was used to assess whether the mean age of smokers is significantly less than 60. Before proceeding, two key assumptions were checked:
+
+- **Normality** — verified visually via histogram; the distribution is approximately bell-shaped, and the large sample size ensures the Central Limit Theorem applies
+- **Outliers** — confirmed absent via boxplot and IQR test
+
+### Bayesian Analysis
+
+A Bayesian one-sample t-test was conducted using the **Jeffreys prior** — a non-informative prior chosen to let the data drive the posterior distribution without imposing strong prior beliefs. The Shapiro-Wilk test revealed minor deviations from normality, but the large sample size justifies proceeding under the CLT. The Bayes Factor was then computed to quantify the strength of evidence against the null hypothesis.
+
+---
+
+## Results
+
+Both approaches led to the same conclusion:
+
+| Method | Key Statistic | Outcome |
+|---|---|---|
+| Frequentist t-test | t = −22.31, p ≈ 4.00e-97 | Reject H₀ |
+| Cohen's d | d = −0.542 | Moderate effect size |
+| Bayesian t-test | t = −21.92, credible interval: (−∞, 44.01) | Reject H₀ |
+| Bayes Factor | BF ≈ 9.97 × 10⁹² | Overwhelming evidence for H₁ |
+
+The estimated mean age of smokers is approximately **42 years**, well below the hypothesized 60. The 95% credible interval confirms that the true mean age is likely below 44 years.
+
+---
+
+## Key Findings
+
+- The average age of smokers is significantly less than 60 — both methods agree with very high confidence
+- Smoking prevalence peaks in the **35–50 age range**, with a gradual decline after age 50
+- The Frequentist and Bayesian approaches produced consistent results, reinforcing confidence in the conclusion
+- The Jeffreys prior was appropriate here as no strong prior information about smoker age demographics was available
+
+---
+
+## Comparing the Two Approaches
+
+| | Frequentist | Bayesian |
+|---|---|---|
+| Decision basis | p-value < 0.05 threshold | Bayes Factor & credible interval |
+| Uncertainty | Confidence interval | Credible interval |
+| Prior beliefs | Not incorporated | Explicitly modelled (Jeffreys) |
+| Conclusion | Reject H₀ | Reject H₀ |
+
+Despite their methodological differences, both approaches arrived at the same conclusion — a useful demonstration of statistical robustness.
+
+---
+
+## Repository Structure
+
+```
+├── 3910FinalProject.Rmd     # Full R Markdown source (analysis + code)
+├── index.html               # Rendered HTML report (live page)
+├── README.md
+```
+
+---
+
+## Tools
+
+R · ggplot2 · BayesFactor · Bolstad · dplyr · janitor
