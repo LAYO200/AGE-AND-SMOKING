@@ -27,6 +27,6 @@ Analysis: The tentative analysis plan is as follows:
 - Analyze the posterior distribution to estimate the mean age & credible interval to help assess the probability that the mean age of smokers is greater than 60 years
 - Conduct a prior sensitivity analysis by testing different priors to understand the impact they have on the results
 6. Compare the results from each approach (includes: interpretation & visualizations) 7. Document findings & results
-Author Contribution’s:
-TBD
+
+https://layo200.github.io/AGE-AND-SMOKING/
                                               
